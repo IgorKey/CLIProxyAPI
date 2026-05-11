@@ -6,7 +6,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 
 COPY go.mod go.sum ./
 
-RUN go mod download
+RUN --mount=type=cache,target=/root/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    GOPROXY=https://goproxy.cn,https://goproxy.io,direct go mod download
 
 COPY . .
 
@@ -14,7 +16,9 @@ ARG VERSION=dev
 ARG COMMIT=none
 ARG BUILD_DATE=unknown
 
-RUN CGO_ENABLED=1 GOOS=linux go build -buildvcs=false -ldflags="-s -w -X 'main.Version=${VERSION}' -X 'main.Commit=${COMMIT}' -X 'main.BuildDate=${BUILD_DATE}'" -o ./CLIProxyAPI ./cmd/server/
+RUN --mount=type=cache,target=/root/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=1 GOOS=linux go build -buildvcs=false -ldflags="-s -w -X 'main.Version=${VERSION}' -X 'main.Commit=${COMMIT}' -X 'main.BuildDate=${BUILD_DATE}'" -o ./CLIProxyAPI ./cmd/server/
 
 FROM debian:bookworm
 
