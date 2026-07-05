@@ -22,7 +22,7 @@ RUN --mount=type=cache,target=/root/go/pkg/mod \
 
 FROM debian:bookworm
 
-RUN apt-get update && apt-get install -y --no-install-recommends tzdata ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends tzdata ca-certificates curl wget && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /CLIProxyAPI
 
